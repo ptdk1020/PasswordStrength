@@ -27,20 +27,18 @@ def num_uppercase(password):
     return count
 
 
-def num_digit(password):
+def num_digits(password):
     """Count the number of digits"""
-    digits = ['0', '1', '2', '4', '5', '6', '7', '8', '9']
+    digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
     count = 0
     for letter in password:
         if letter in digits:
             count += 1
     return count
 
-
-def num_special(password):
+def num_specials(password):
     """Count the number of special characters"""
-    return len(password)-num_lowercase(password)-num_uppercase(password)-num_digit(password)
+    return len(password)-num_lowercase(password)-num_uppercase(password)-num_digits(password)
 
 
-def jarowinkler(password):
-    return
+
