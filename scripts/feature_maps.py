@@ -1,6 +1,7 @@
 """This file contains feature extracting and data enrichment functions"""
 
 import string
+from zxcvbn import zxcvbn
 
 
 def length(password):
@@ -111,3 +112,12 @@ def last_special(password):
     else:
         return 0
 
+
+def zxcvbn_score(password):
+    """returns the zxcvbn score"""
+    return zxcvbn(password)['score']
+
+
+def unique_chars(password):
+    """returns the number of unique characters in the string"""
+    return len(set(password))
