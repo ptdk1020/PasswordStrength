@@ -12,7 +12,7 @@ def zxcvbn_extract(file, destination):
     df.dropna(inplace=True)
 
     #df = test
-    #df=df.iloc[1000000:2000000, :]
+    df=df.iloc[1000000:2000000, :]
 
     # create empty dataframe dz
     cols = ['pw', 'words']
@@ -42,8 +42,8 @@ def zxcvbn_extract(file, destination):
     return
 
 
-file = '../data/dataset/BTC1.csv'
-destination = '../data/dataset_zxcvbn/BTC1_zxcvbn.csv'
+file = '../data/dataset/BTC2.csv'
+destination = '../data/dataset_zxcvbn/BTC2_zxcvbn2.csv'
 
 zxcvbn_extract(file, destination)
 

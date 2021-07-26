@@ -1,3 +1,5 @@
+# This is a template gitignore obtained from https://github.com/github/gitignore/blob/master/Python.gitignore
+# added .idea and data to the list
 .idea
 data/
 
