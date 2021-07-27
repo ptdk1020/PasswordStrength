@@ -15,8 +15,8 @@ from dash.dependencies import Input, Output
 # ---------end-of-gensim-stuff---------------
 
 # -------- import clean data ----------------
-df = pd.read_csv('../data/data2use/data0.csv',index_col=0)
-dff = pd.DataFrame(df[['password','frequency']].iloc[:100,:])
+df = pd.read_csv('../data/data2use/USA2/data0.csv',index_col=0)
+dff = pd.DataFrame(df[['password','frequency']].iloc[:200,:])
 
 # getting zxcvbn strength options
 D_zxcvbn = []
