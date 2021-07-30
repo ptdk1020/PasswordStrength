@@ -15,13 +15,37 @@ from dash.dependencies import Input, Output
 # ---------end-of-gensim-stuff---------------
 
 # -------- import clean data ----------------
-df = pd.read_csv('../data/data2use/USA2/data0.csv',index_col=0)
+df = pd.read_csv('../data/data2use/USA2/data0.csv', index_col=0)
 dff = pd.DataFrame(df[['password','frequency']].iloc[:200,:])
 
-# getting zxcvbn strength options
-D_zxcvbn = []
-for s in sorted(df.zxcvbn.unique()):
-    D_zxcvbn.append({'label': str(s), 'value': s})
+# tsne 2d
+tsne2 = pd.read_csv('../data/data2use/Embedding/red_100_8_tsne_2.csv')
+tsne2['label'] = tsne2['label'].astype('string')
+tsne2d = px.scatter(data_frame=tsne2, x='x', y='y',color='label', title='t-SNE',
+                    color_discrete_sequence=px.colors.qualitative.Prism,hover_data=['password'])
+
+# umap 2d
+umap2 = pd.read_csv('../data/data2use/Embedding/red_100_8_umap_2.csv')
+umap2['label'] = umap2['label'].astype('string')
+umap2d = px.scatter(data_frame=umap2, x='x', y='y',color='label', title='UMAP',
+                    color_discrete_sequence=px.colors.qualitative.Prism,hover_data=['password'])
+
+# tsne 3d
+tsne3 = pd.read_csv('../data/data2use/Embedding/red_100_8_tsne_3.csv')
+tsne3['label'] = tsne3['label'].astype('string')
+tsne3d = px.scatter_3d(data_frame=tsne3, x='x', y='y', z='z', color='label', opacity=0.75,
+                    color_discrete_sequence=px.colors.qualitative.Prism,hover_data=['password'])
+
+# umap 3d
+umap3 = pd.read_csv('../data/data2use/Embedding/red_100_8_umap_3.csv')
+umap3['label'] = umap3['label'].astype('string')
+umap3d = px.scatter_3d(data_frame=umap3, x='x', y='y', z='z', color='label', opacity =0.75,
+                    color_discrete_sequence=px.colors.qualitative.Prism,hover_data=['password'])
+
+# thres 10 + clusters
+# c8 = pd.read_csv('../data/data2use/Embedding/red_10_8_umap_2.csv')
+# c12 = pd.read_csv('../data/data2use/Embedding/red_10_12_umap_2.csv')
+# c16 = pd.read_csv('../data/data2use/Embedding/red_10_16_umap_2.csv')
 
 # --------app-----------------------
 app = dash.Dash(__name__)
@@ -29,13 +53,14 @@ app = dash.Dash(__name__)
 app.layout = html.Div(
     [
         html.H1('Visual insights into Passwords', style={'text-align': 'left'}),
+        html.P('This page is best viewed in full size window', style={'text-align': 'left'}),
         html.Div(
            [
                dbc.Card([
                    dbc.CardImg(src="/static/images/placeholder286x180.png", top=True),
                    dbc.CardBody([
-                       html.H4("An examination of <file>"),
-                       html.P("This is a high-level description of what we did."),
+                       html.H4("Introduction"),
+                       html.P(""),
                     ]),
                ],
                    style={'display': 'inline-block','width': '60vh', 'height': '30vh'}
@@ -51,21 +76,72 @@ app.layout = html.Div(
            ]
         ),
         html.Div([
-                    dcc.Dropdown(id='select-zxcvbn-score',
-                         options=[
-                            {'label': '0', 'value': 0},
-                            {'label': '1', 'value': 1},
-                            {'label': '2', 'value': 2},
-                            {'label': '3', 'value': 3},
-                            {'label': '4', 'value': 4}
-                                 ],
-                            value=0,
-                         style={'width': '70%'}
-                     ),
-                    dcc.Graph(id='zxcvbn-chart', style={'display': 'inline-block', 'width': '60vh', 'height': '60vh'}),
-                    dcc.Graph(id='zxcvbn-chart-2',style={'display': 'inline-block', 'width': '60vh', 'height': '60vh'}),
-                    dcc.Graph(id='zxcvbn-chart-3',style={'display': 'inline-block', 'width': '60vh', 'height': '60vh'})
+                html.Label('Choose zxcvbn score:'),
+                dcc.Dropdown(id='select-zxcvbn-score',
+                     options=[
+                        {'label': '0', 'value': 0},
+                        {'label': '1', 'value': 1},
+                        {'label': '2', 'value': 2},
+                        {'label': '3', 'value': 3},
+                        {'label': '4', 'value': 4}
+                             ],
+                     value=0,
+                     style={'width': '33%'}
+                 ),
+                dcc.Graph(id='zxcvbn-chart', style={'display': 'inline-block', 'width': '60vh', 'height': '60vh'}),
+                dcc.Graph(id='zxcvbn-chart-2',style={'display': 'inline-block', 'width': '60vh', 'height': '60vh'}),
+                dcc.Graph(id='zxcvbn-chart-3',style={'display': 'inline-block', 'width': '60vh', 'height': '60vh'})
                   ]),
+        html.Div([
+                dcc.Graph(id='tsne2d',
+                          figure=tsne2d,
+                          style={'display': 'inline-block', 'width': '90vh', 'height': '80vh'}),
+                dcc.Graph(id='umap2d',
+                          figure=umap2d,
+                          style={'display': 'inline-block', 'width': '90vh', 'height': '80vh'}),
+        ]),
+        html.Div([
+                dcc.Graph(id='tse-3d',
+                          figure=tsne3d,
+                          style={'display': 'inline-block', 'width': '90vh', 'height': '80vh'}),
+                dcc.Graph(id='umap-3d',
+                          figure=umap3d,
+                          style={'display': 'inline-block', 'width': '90vh', 'height': '80vh'}),
+        ]),
+        html.Div([
+                dcc.Dropdown(id='select-embedding',
+                        options=[
+                             {'label': 'UMAP', 'value': 'umap'},
+                             {'label': 't-SNE', 'value': 'tsne'},
+                         ],
+                             value='umap',
+                         style={'display': 'inline-block','width': '33%'}
+                         ),
+                dcc.Dropdown(id='select-column',
+                        options=[
+                             {'label': 'topics', 'value': 'label'},
+                             {'label': 'zxcvbn score', 'value': 'zxcvbn'},
+                             {'label': 'password composition', 'value': 'category'},
+                         ],
+                         style={'display': 'inline-block','width': '33%'}
+                         ),
+                dcc.Graph(id='interactive',
+                          style={'display': 'inline-block', 'width': '150vh', 'height': '100vh'})
+        ]),
+        # html.Div([
+        #         dcc.Dropdown(id='select-num-clusters',
+        #                 options=[
+        #                      {'label': '8', 'value': '8'},
+        #                      {'label': '12', 'value': '12'},
+        #                      {'label': '16', 'value': '16'},
+        #                      {'label': 'Manual', 'value': 'manual'}
+        #                  ],
+        #                  value=8,
+        #                  style={'display': 'inline-block','width': '33%'}
+        #                  ),
+        #         dcc.Graph(id='interactive-2',
+        #                   style={'display': 'inline-block', 'width': '150vh', 'height': '100vh'})
+        # ]),
     ],
     className='wrapper'
 )
@@ -85,8 +161,7 @@ def update_zxcvbn(score):
     fig = px.pie(data_frame=frame,
                  names='category',
                  values='frequency',
-                 #hover_data=['category', 'frequency'],
-                 #template='plotly_dark'
+                 color_discrete_sequence=px.colors.qualitative.T10,
                  )
     # fig.update_layout(yaxis_title='count')
     return fig
@@ -97,17 +172,16 @@ def update_zxcvbn(score):
     [Input(component_id='select-zxcvbn-score', component_property='value')]
 )
 def update_zxcvbn_2(score):
-    frame = df.copy()
-    frame = frame.groupby(['zxcvbn', 'number_of_symbols']).count().reset_index()
-    frame = frame[['zxcvbn', 'number_of_symbols', 'frequency']]
-    frame['log'] = np.log(1+frame['frequency'])
-    frame = frame[frame.zxcvbn == score]
+    frame2 = df.copy()
+    frame2 = frame2.groupby(['zxcvbn', 'number_of_symbols']).count().reset_index()
+    frame2 = frame2[['zxcvbn', 'number_of_symbols', 'frequency']]
+    frame2['log'] = np.log(1+frame2['frequency'])
+    frame2 = frame2[frame2.zxcvbn == score]
 
-    fig = px.bar(data_frame=frame,
+    fig = px.bar(data_frame=frame2,
                  x='number_of_symbols',
                  y='log',
-                 #hover_data=['category', 'frequency'],
-                 #template='plotly_dark'
+                 color_discrete_sequence=px.colors.qualitative.T10,
                  )
     fig.update_layout(yaxis_title='log count')
     return fig
@@ -127,11 +201,44 @@ def update_zxcvbn_3(score):
     fig2 = px.bar(data_frame=frame,
                  x='passlength',
                  y='frequency',
-                 #hover_data=['category', 'frequency'],
-                 #template='plotly_dark'
+                 color_discrete_sequence=px.colors.qualitative.T10,
                  )
     # fig.update_layout(yaxis_title='count')
     return fig2
+
+
+@app.callback(
+    Output('interactive', 'figure'),
+    Input('select-column', 'value'),
+    Input('select-embedding', 'value'),
+)
+def interactive_plot(col, map):
+    if map == 'umap':
+        frame = umap2.copy()
+    elif map == 'tsne':
+        frame = tsne2.copy()
+
+    #frame['zxcvbn'] = frame['zxcvbn'].astype('string')
+    int_fig = px.scatter(data_frame=frame , x='x', y='y', color=col,
+                         #color_discrete_sequence=px.colors.qualitative.Prism,
+                         hover_data=['password'])
+    return int_fig
+
+# @app.callback(
+#     Output('interactive-2', 'figure'),
+#     Input('select-num-clusters', 'value'),
+# )
+# def interactive_2_plot(clus):
+#
+#     frame = pd.read_csv('../data/data2use/Embedding/red_100_'+ str(clus) +'_umap_2.csv')
+#
+#     frame['label'] = frame['label'].astype('str')
+#
+#     #frame['zxcvbn'] = frame['zxcvbn'].astype('string')
+#     int2_fig = px.scatter(data_frame=frame , x='x', y='y', color='label',
+#                          #color_discrete_sequence=px.colors.qualitative.Alphabet,
+#                          hover_data=['password'])
+#     return int2_fig
 
 
 if __name__ == "__main__":
