@@ -15,7 +15,7 @@ from dash.dependencies import Input, Output
 # ---------end-of-gensim-stuff---------------
 
 # -------- import clean data ----------------
-df = pd.read_csv('../data/data2use/USA2/data0.csv', index_col=0)
+df = pd.read_csv('../data/data2use/USA2/data0.csv')
 dff = pd.DataFrame(df[['password','frequency']].iloc[:200,:])
 
 # tsne 2d
@@ -52,31 +52,49 @@ app = dash.Dash(__name__)
 
 app.layout = html.Div(
     [
-        html.H1('Visual insights into Passwords', style={'text-align': 'left'}),
-        html.P('This page is best viewed in full size window', style={'text-align': 'left'}),
+        html.H1('Visual insights into Passwords', style={'text-align': 'left', 'font-family': 'sans-serif'}),
+        html.P('This page is best viewed in full size window', style={'text-align': 'left', 'font-family': 'sans-serif',
+                                                                      'font-size': '15px', 'font-style': 'italic'}),
         html.Div(
            [
-               dbc.Card([
-                   dbc.CardImg(src="/static/images/placeholder286x180.png", top=True),
-                   dbc.CardBody([
-                       html.H4("Introduction"),
-                       html.P(""),
-                    ]),
-               ],
-                   style={'display': 'inline-block','width': '60vh', 'height': '30vh'}
+               html.Div(
+                   [
+                       html.Img(src=app.get_asset_url('/images/password_card.jpg'),
+                                style={'width': '300px', 'height': '200px', }),
+                       html.Br(),
+                       dbc.Card([
+                           # dbc.CardImg(src="/assets/images/password_card.jpg", top=True),
+                           dbc.CardBody([
+                               html.H4("Introduction"),
+                               html.P("Describe dashboard"),
+                           ]),
+                       ],  # className='boxdiv',
+                           style={#'width': '80vh', 'height': '40vh',
+                                  'vertical-align': 'top', 'font-family': 'sans-serif'}
+                       ),
+                   ], style={'vertical-align': 'top', 'display': 'inline-block', 'width': '132.5vh', 'height': '40vh',}
                ),
-               html.Div([dash_table.DataTable(
+               html.Div([
+                   html.Label("Top 200 most frequent passwords"),
+                   dash_table.DataTable(
                    id='top-100-passwords',
                    columns=[{'id': c, 'name': c} for c in dff.columns],
                    page_size=10,
-                   data= dff.to_dict('records')
-               )],
-                   style={'display': 'inline-block','width': '60vh', 'height': '30vh'}
+                   data= dff.to_dict('records'),
+                   style_as_list_view=True,
+                   style_header={'backgroundColor': '#ADD8E6', 'fontWeight': 'bold'},
+               )], className='boxdiv',
+                   style={'display': 'inline-block', 'width': ' 60vh', 'height': '40vh',
+                          'font-family': 'sans-serif', 'horizontal-align': 'right'}
                )
-           ]
+           ], #className='boxdiv'
         ),
         html.Div([
-                html.Label('Choose zxcvbn score:'),
+                html.H4('Some password statistics', style={'font-family': 'sans-serif'}),
+                html.P('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+                       style={'font-family': 'sans-serif', 'width': ' 70vh'}),
+                html.Br(),
+                html.Label('Choose zxcvbn score:', style={'font-family': 'sans-serif', 'display': 'inline-block'}),
                 dcc.Dropdown(id='select-zxcvbn-score',
                      options=[
                         {'label': '0', 'value': 0},
@@ -86,48 +104,55 @@ app.layout = html.Div(
                         {'label': '4', 'value': 4}
                              ],
                      value=0,
-                     style={'width': '33%'}
+                     style={'verticalAlign': 'middle', 'display': 'inline-block', 'width': '33%', 'font-family': 'sans-serif'}
                  ),
+                html.Br(),
                 dcc.Graph(id='zxcvbn-chart', style={'display': 'inline-block', 'width': '60vh', 'height': '60vh'}),
-                dcc.Graph(id='zxcvbn-chart-2',style={'display': 'inline-block', 'width': '60vh', 'height': '60vh'}),
-                dcc.Graph(id='zxcvbn-chart-3',style={'display': 'inline-block', 'width': '60vh', 'height': '60vh'})
-                  ]),
+                dcc.Graph(id='zxcvbn-chart-2', style={'display': 'inline-block', 'width': '60vh', 'height': '60vh'}),
+                dcc.Graph(id='zxcvbn-chart-3', style={'display': 'inline-block', 'width': '60vh', 'height': '60vh'}),
+                html.Br(),
+                ], className='boxdiv'),
+        # html.Div([
+        #         dcc.Graph(id='tsne2d',
+        #                   figure=tsne2d,
+        #                   style={'display': 'inline-block', 'width': '90vh', 'height': '80vh'}),
+        #         dcc.Graph(id='umap2d',
+        #                   figure=umap2d,
+        #                   style={'display': 'inline-block', 'width': '90vh', 'height': '80vh'}),
+        # ]),
+        # html.Div([
+        #         dcc.Graph(id='tse-3d',
+        #                   figure=tsne3d,
+        #                   style={'display': 'inline-block', 'width': '90vh', 'height': '80vh'}),
+        #         dcc.Graph(id='umap-3d',
+        #                   figure=umap3d,
+        #                   style={'display': 'inline-block', 'width': '90vh', 'height': '80vh'}),
+        # ]),
         html.Div([
-                dcc.Graph(id='tsne2d',
-                          figure=tsne2d,
-                          style={'display': 'inline-block', 'width': '90vh', 'height': '80vh'}),
-                dcc.Graph(id='umap2d',
-                          figure=umap2d,
-                          style={'display': 'inline-block', 'width': '90vh', 'height': '80vh'}),
-        ]),
-        html.Div([
-                dcc.Graph(id='tse-3d',
-                          figure=tsne3d,
-                          style={'display': 'inline-block', 'width': '90vh', 'height': '80vh'}),
-                dcc.Graph(id='umap-3d',
-                          figure=umap3d,
-                          style={'display': 'inline-block', 'width': '90vh', 'height': '80vh'}),
-        ]),
-        html.Div([
+                html.H4('Password embedding visualization', style={'font-family': 'sans-serif'}),
+                html.P('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+                       style={'font-family': 'sans-serif', 'width': ' 70vh'}),
+                html.Label('Choose reduction map:', style={'verticalAlign': 'middle', 'display': 'inline-block', 'font-family': 'sans-serif'}),
                 dcc.Dropdown(id='select-embedding',
                         options=[
                              {'label': 'UMAP', 'value': 'umap'},
                              {'label': 't-SNE', 'value': 'tsne'},
                          ],
                              value='umap',
-                         style={'display': 'inline-block','width': '33%'}
+                         style={'verticalAlign': 'middle', 'display': 'inline-block', 'width': '33%', 'font-family': 'sans-serif'}
                          ),
+                html.Label('Additional filters:', style={'verticalAlign': 'middle', 'display': 'inline-block', 'font-family': 'sans-serif'}),
                 dcc.Dropdown(id='select-column',
                         options=[
                              {'label': 'topics', 'value': 'label'},
                              {'label': 'zxcvbn score', 'value': 'zxcvbn'},
                              {'label': 'password composition', 'value': 'category'},
                          ],
-                         style={'display': 'inline-block','width': '33%'}
+                         style={'verticalAlign': 'middle', 'display': 'inline-block', 'width': '33%', 'font-family': 'sans-serif'}
                          ),
                 dcc.Graph(id='interactive',
-                          style={'display': 'inline-block', 'width': '150vh', 'height': '100vh'})
-        ]),
+                          style={'display': 'inline-block', 'width': '150vh', 'height': '100vh', 'font-family': 'sans-serif'})
+        ], className='boxdiv'),
         # html.Div([
         #         dcc.Dropdown(id='select-num-clusters',
         #                 options=[
