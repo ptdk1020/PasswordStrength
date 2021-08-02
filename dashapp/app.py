@@ -44,7 +44,7 @@ app.layout = html.Div(
                                    This dashboard contains some insights on a dataset of leaked passwords. 
                                    It is divided into two parts. 
                                    The first shows several statistical charts, filtered by zxcvbn score, which is an 
-                                   algorithmic score developed by Drobbox. 
+                                   algorithmic score developed by Dropbox. 
                                    The second part includes our password visualization result, in both 2 and 3
                                    dimensions.
                                     """),
