@@ -15,37 +15,10 @@ from dash.dependencies import Input, Output
 # ---------end-of-gensim-stuff---------------
 
 # -------- import clean data ----------------
-df = pd.read_csv('../data/data2use/USA2/data0.csv')
+file_path = '../data/data2use/USA2/USA2data.csv'
+df = pd.read_csv(file_path)
+df = df.iloc[:100000, :]
 dff = pd.DataFrame(df[['password','frequency']].iloc[:200,:])
-
-# tsne 2d
-tsne2 = pd.read_csv('../data/data2use/Embedding/red_100_8_tsne_2.csv')
-tsne2['label'] = tsne2['label'].astype('string')
-tsne2d = px.scatter(data_frame=tsne2, x='x', y='y',color='label', title='t-SNE',
-                    color_discrete_sequence=px.colors.qualitative.Prism,hover_data=['password'])
-
-# umap 2d
-umap2 = pd.read_csv('../data/data2use/Embedding/red_100_8_umap_2.csv')
-umap2['label'] = umap2['label'].astype('string')
-umap2d = px.scatter(data_frame=umap2, x='x', y='y',color='label', title='UMAP',
-                    color_discrete_sequence=px.colors.qualitative.Prism,hover_data=['password'])
-
-# tsne 3d
-tsne3 = pd.read_csv('../data/data2use/Embedding/red_100_8_tsne_3.csv')
-tsne3['label'] = tsne3['label'].astype('string')
-tsne3d = px.scatter_3d(data_frame=tsne3, x='x', y='y', z='z', color='label', opacity=0.75,
-                    color_discrete_sequence=px.colors.qualitative.Prism,hover_data=['password'])
-
-# umap 3d
-umap3 = pd.read_csv('../data/data2use/Embedding/red_100_8_umap_3.csv')
-umap3['label'] = umap3['label'].astype('string')
-umap3d = px.scatter_3d(data_frame=umap3, x='x', y='y', z='z', color='label', opacity =0.75,
-                    color_discrete_sequence=px.colors.qualitative.Prism,hover_data=['password'])
-
-# thres 10 + clusters
-# c8 = pd.read_csv('../data/data2use/Embedding/red_10_8_umap_2.csv')
-# c12 = pd.read_csv('../data/data2use/Embedding/red_10_12_umap_2.csv')
-# c16 = pd.read_csv('../data/data2use/Embedding/red_10_16_umap_2.csv')
 
 # --------app-----------------------
 app = dash.Dash(__name__)
@@ -66,11 +39,19 @@ app.layout = html.Div(
                            # dbc.CardImg(src="/assets/images/password_card.jpg", top=True),
                            dbc.CardBody([
                                html.H4("Introduction"),
-                               html.P("Describe dashboard"),
+                               html.P(
+                                   """
+                                   This dashboard contains some insights on a dataset of leaked passwords. 
+                                   It is divided into two parts. 
+                                   The first shows several statistical charts, filtered by zxcvbn score, which is an 
+                                   algorithmic score developed by Drobbox. 
+                                   The second part includes our password visualization result, in both 2 and 3
+                                   dimensions.
+                                    """),
                            ]),
                        ],  # className='boxdiv',
                            style={#'width': '80vh', 'height': '40vh',
-                                  'vertical-align': 'top', 'font-family': 'sans-serif'}
+                                  'vertical-align': 'top', 'font-family': 'sans-serif','width': ' 70vh'}
                        ),
                    ], style={'vertical-align': 'top', 'display': 'inline-block', 'width': '132.5vh', 'height': '40vh',}
                ),
@@ -91,7 +72,16 @@ app.layout = html.Div(
         ),
         html.Div([
                 html.H4('Some password statistics', style={'font-family': 'sans-serif'}),
-                html.P('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+                html.P(
+                """
+                Given a choice of a zxcvbn score, this section contains several statistical charts on the top 
+                100000 most frequent passwords in the dataset. 
+                For password categories,
+                the definitions are as follows: alphabetic (at least 80% letters), numeric (at least 80% digits), 
+                and mixed (at least 30% letters, at least 30% digits). Also, a password is policy compliant if it
+                 is at least 8 characters long anf if it contains at least 1 lowercase letter, 1 uppercase letter, 
+                 1 digit, and 1 special character. 
+                """,
                        style={'font-family': 'sans-serif', 'width': ' 70vh'}),
                 html.Br(),
                 html.Label('Choose zxcvbn score:', style={'font-family': 'sans-serif', 'display': 'inline-block'}),
@@ -107,30 +97,23 @@ app.layout = html.Div(
                      style={'verticalAlign': 'middle', 'display': 'inline-block', 'width': '33%', 'font-family': 'sans-serif'}
                  ),
                 html.Br(),
-                dcc.Graph(id='zxcvbn-chart', style={'display': 'inline-block', 'width': '60vh', 'height': '60vh'}),
+                dcc.Graph(id='zxcvbn-chart-1', style={'display': 'inline-block', 'width': '60vh', 'height': '60vh'}),
                 dcc.Graph(id='zxcvbn-chart-2', style={'display': 'inline-block', 'width': '60vh', 'height': '60vh'}),
                 dcc.Graph(id='zxcvbn-chart-3', style={'display': 'inline-block', 'width': '60vh', 'height': '60vh'}),
                 html.Br(),
+                dcc.Graph(id='zxcvbn-chart-4', style={'display': 'inline-block', 'width': '60vh', 'height': '60vh'}),
+                dcc.Graph(id='zxcvbn-chart-5', style={'display': 'inline-block', 'width': '60vh', 'height': '60vh'}),
+                dcc.Graph(id='zxcvbn-chart-6', style={'display': 'inline-block', 'width': '60vh', 'height': '60vh'}),
+                html.Br(),
                 ], className='boxdiv'),
-        # html.Div([
-        #         dcc.Graph(id='tsne2d',
-        #                   figure=tsne2d,
-        #                   style={'display': 'inline-block', 'width': '90vh', 'height': '80vh'}),
-        #         dcc.Graph(id='umap2d',
-        #                   figure=umap2d,
-        #                   style={'display': 'inline-block', 'width': '90vh', 'height': '80vh'}),
-        # ]),
-        # html.Div([
-        #         dcc.Graph(id='tse-3d',
-        #                   figure=tsne3d,
-        #                   style={'display': 'inline-block', 'width': '90vh', 'height': '80vh'}),
-        #         dcc.Graph(id='umap-3d',
-        #                   figure=umap3d,
-        #                   style={'display': 'inline-block', 'width': '90vh', 'height': '80vh'}),
-        # ]),
         html.Div([
                 html.H4('Password embedding visualization', style={'font-family': 'sans-serif'}),
-                html.P('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+                html.P(
+                    """
+                    This section contains our visualization result. Via a fastText embedding, we represented 
+                    passwords as 300-dimensional vectors. Using UMAP or t-SNE, we visualize this embedding in 
+                    2 or 3 dimensions. We include additional filters for various password chracteristics.
+                    """,
                        style={'font-family': 'sans-serif', 'width': ' 70vh'}),
                 html.Label('Choose reduction map:', style={'verticalAlign': 'middle', 'display': 'inline-block', 'font-family': 'sans-serif'}),
                 dcc.Dropdown(id='select-embedding',
@@ -153,101 +136,125 @@ app.layout = html.Div(
                 dcc.Graph(id='interactive',
                           style={'display': 'inline-block', 'width': '150vh', 'height': '100vh', 'font-family': 'sans-serif'})
         ], className='boxdiv'),
-        # html.Div([
-        #         dcc.Dropdown(id='select-num-clusters',
-        #                 options=[
-        #                      {'label': '8', 'value': '8'},
-        #                      {'label': '12', 'value': '12'},
-        #                      {'label': '16', 'value': '16'},
-        #                      {'label': 'Manual', 'value': 'manual'}
-        #                  ],
-        #                  value=8,
-        #                  style={'display': 'inline-block','width': '33%'}
-        #                  ),
-        #         dcc.Graph(id='interactive-2',
-        #                   style={'display': 'inline-block', 'width': '150vh', 'height': '100vh'})
-        # ]),
     ],
     className='wrapper'
 )
 
 
 # --------connect graphs with dash components------
+
 @app.callback(
-    Output("zxcvbn-chart", "figure"),
+    Output("zxcvbn-chart-1", "figure"),
+    Output("zxcvbn-chart-2", "figure"),
+    Output("zxcvbn-chart-3", "figure"),
+    Output("zxcvbn-chart-4", "figure"),
+    Output("zxcvbn-chart-5", "figure"),
+    Output("zxcvbn-chart-6", "figure"),
     [Input(component_id='select-zxcvbn-score', component_property='value')]
 )
-def update_zxcvbn(score):
+def update_graphs(score):
+    # figure 1
     frame = df.copy()
     frame = frame.groupby(['zxcvbn', 'category']).count().reset_index()
     frame = frame[['zxcvbn', 'category', 'frequency']]
     frame = frame[frame.zxcvbn == score]
 
-    fig = px.pie(data_frame=frame,
+    fig1 = px.pie(data_frame=frame,
                  names='category',
                  values='frequency',
                  color_discrete_sequence=px.colors.qualitative.T10,
+                 title='Distribution of password categories'
                  )
-    # fig.update_layout(yaxis_title='count')
-    return fig
 
+    # figure 2
+    frame = df.copy()
+    frame = frame.groupby(['zxcvbn', 'first_char']).count().reset_index()
+    frame = frame[['zxcvbn', 'first_char', 'frequency']]
+    frame = frame[frame.zxcvbn == score]
 
-@app.callback(
-    Output("zxcvbn-chart-2", "figure"),
-    [Input(component_id='select-zxcvbn-score', component_property='value')]
-)
-def update_zxcvbn_2(score):
-    frame2 = df.copy()
-    frame2 = frame2.groupby(['zxcvbn', 'number_of_symbols']).count().reset_index()
-    frame2 = frame2[['zxcvbn', 'number_of_symbols', 'frequency']]
-    frame2['log'] = np.log(1+frame2['frequency'])
-    frame2 = frame2[frame2.zxcvbn == score]
-
-    fig = px.bar(data_frame=frame2,
-                 x='number_of_symbols',
-                 y='log',
+    fig2 = px.pie(data_frame=frame,
+                 names='first_char',
+                 values='frequency',
                  color_discrete_sequence=px.colors.qualitative.T10,
+                 title='Distribution of first character types'
                  )
-    fig.update_layout(yaxis_title='log count')
-    return fig
 
+    # figure 3
+    frame = df.copy()
+    frame = frame.groupby(['zxcvbn', 'last_char']).count().reset_index()
+    frame = frame[['zxcvbn', 'last_char', 'frequency']]
+    frame = frame[frame.zxcvbn == score]
 
-@app.callback(
-    Output("zxcvbn-chart-3", "figure"),
-    [Input(component_id='select-zxcvbn-score', component_property='value')]
-)
-def update_zxcvbn_3(score):
+    fig3 = px.pie(data_frame=frame,
+                  names='last_char',
+                  values='frequency',
+                  color_discrete_sequence=px.colors.qualitative.T10,
+                  title='Distribution of last character types'
+                  )
+
+    # figure 4
     frame = df.copy()
     frame = frame.groupby(['zxcvbn', 'passlength']).count().reset_index()
     frame = frame[['zxcvbn', 'passlength', 'frequency']]
-    # frame['log_count'] = np.log(frame['frequency'])
     frame = frame[frame.zxcvbn == score]
 
-    fig2 = px.bar(data_frame=frame,
-                 x='passlength',
-                 y='frequency',
+    fig4 = px.bar(data_frame=frame,
+                  x='passlength',
+                  y='frequency',
+                  color_discrete_sequence=px.colors.qualitative.T10,
+                  title='Distribution of password lengths'
+                  )
+    fig4.update_layout(xaxis_title='password lengths')
+
+    # figure 5
+    frame = df.copy()
+    frame = frame.groupby(['zxcvbn', 'number_of_uppercase']).count().reset_index()
+    frame = frame[['zxcvbn', 'number_of_uppercase', 'frequency']]
+    frame['log'] = np.log(1+frame['frequency'])
+    frame = frame[frame.zxcvbn == score]
+
+    fig5 = px.bar(data_frame=frame,
+                 x='number_of_uppercase',
+                 y='log',
                  color_discrete_sequence=px.colors.qualitative.T10,
+                 title='Log distribution of number of uppercase'
                  )
-    # fig.update_layout(yaxis_title='count')
-    return fig2
+    fig5.update_layout(xaxis_title='number of uppercase letters')
+    fig5.update_layout(yaxis_title='logarithmic frequency')
+
+    # figure 6
+    frame = df.copy()
+    frame = frame.groupby(['zxcvbn', 'passpolicy']).count().reset_index()
+    frame = frame[['zxcvbn', 'passpolicy', 'frequency']]
+    frame['log'] = np.log(1 + frame['frequency'])
+    frame = frame[frame.zxcvbn == score]
+
+    fig6 = px.bar(frame, x='passpolicy',
+                  y='log',
+                  color_discrete_sequence=px.colors.qualitative.T10,
+                  title='Log distribution of policy compliant passwords')
+    fig6.update_layout(xaxis_title='compliant status')
+    fig6.update_layout(yaxis_title='logarithmic frequency')
+
+    return fig1, fig2, fig3, fig4, fig5, fig6
 
 
-@app.callback(
-    Output('interactive', 'figure'),
-    Input('select-column', 'value'),
-    Input('select-embedding', 'value'),
-)
-def interactive_plot(col, map):
-    if map == 'umap':
-        frame = umap2.copy()
-    elif map == 'tsne':
-        frame = tsne2.copy()
-
-    #frame['zxcvbn'] = frame['zxcvbn'].astype('string')
-    int_fig = px.scatter(data_frame=frame , x='x', y='y', color=col,
-                         #color_discrete_sequence=px.colors.qualitative.Prism,
-                         hover_data=['password'])
-    return int_fig
+# @app.callback(
+#     Output('interactive', 'figure'),
+#     Input('select-column', 'value'),
+#     Input('select-embedding', 'value'),
+# )
+# def interactive_plot(col, map):
+#     if map == 'umap':
+#         frame = umap2.copy()
+#     elif map == 'tsne':
+#         frame = tsne2.copy()
+#
+#     #frame['zxcvbn'] = frame['zxcvbn'].astype('string')
+#     int_fig = px.scatter(data_frame=frame , x='x', y='y', color=col,
+#                          #color_discrete_sequence=px.colors.qualitative.Prism,
+#                          hover_data=['password'])
+#     return int_fig
 
 # @app.callback(
 #     Output('interactive-2', 'figure'),
