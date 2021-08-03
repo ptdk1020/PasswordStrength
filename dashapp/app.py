@@ -15,10 +15,14 @@ from dash.dependencies import Input, Output
 # ---------end-of-gensim-stuff---------------
 
 # -------- import clean data ----------------
-file_path = '../data/data2use/USA2/USA2data.csv'
-df = pd.read_csv(file_path)
+frame_path = '../data/data2use/USA2/data0.csv'
+reduction_file = '../data/data2use/USA2/reduction/freq_100_10_clus.csv'
+
+df = pd.read_csv(frame_path)
 df = df.iloc[:100000, :]
 dff = pd.DataFrame(df[['password','frequency']].iloc[:200,:])
+rd = pd.read_csv(reduction_file)
+# rd['zxcvbn'] = rd['zxcvbn'].astype('string')
 
 # --------app-----------------------
 app = dash.Dash(__name__)
@@ -110,9 +114,10 @@ app.layout = html.Div(
                 html.H4('Password embedding visualization', style={'font-family': 'sans-serif'}),
                 html.P(
                     """
-                    This section contains our visualization result. Via a fastText embedding, we represented 
+                    This section contains our visualization result on passwords with frequency at least 100. 
+                    Via a fastText embedding, we represented 
                     passwords as 300-dimensional vectors. Using UMAP or t-SNE, we visualize this embedding in 
-                    2 or 3 dimensions. We include additional filters for various password chracteristics.
+                    2 and 3 dimensions. We include additional filters for various password chracteristics.
                     """,
                        style={'font-family': 'sans-serif', 'width': ' 70vh'}),
                 html.Label('Choose reduction map:', style={'verticalAlign': 'middle', 'display': 'inline-block', 'font-family': 'sans-serif'}),
@@ -127,15 +132,22 @@ app.layout = html.Div(
                 html.Label('Additional filters:', style={'verticalAlign': 'middle', 'display': 'inline-block', 'font-family': 'sans-serif'}),
                 dcc.Dropdown(id='select-column',
                         options=[
-                             {'label': 'topics', 'value': 'label'},
+                             {'label': 'Password topic', 'value': 'topic'},
+                             {'label': 'Policy compliance', 'value': 'passpolicy'},
                              {'label': 'zxcvbn score', 'value': 'zxcvbn'},
-                             {'label': 'password composition', 'value': 'category'},
+                             {'label': 'Password category', 'value': 'category'},
+                             {'label': 'First character', 'value': 'first_char'},
+                             {'label': 'Last character', 'value': 'last_char'},
+                             {'label': 'length', 'value': 'passlength'}
                          ],
                          style={'verticalAlign': 'middle', 'display': 'inline-block', 'width': '33%', 'font-family': 'sans-serif'}
                          ),
-                dcc.Graph(id='interactive',
-                          style={'display': 'inline-block', 'width': '150vh', 'height': '100vh', 'font-family': 'sans-serif'})
+                dcc.Graph(id='embedding-2d',
+                          style={'display': 'inline-block', 'width': '150vh', 'height': '100vh', 'font-family': 'sans-serif'}),
+                dcc.Graph(id='embedding-3d',
+                          style={'display': 'inline-block', 'width': '150vh', 'height': '100vh', 'font-family': 'sans-serif'}),
         ], className='boxdiv'),
+
     ],
     className='wrapper'
 )
@@ -239,22 +251,37 @@ def update_graphs(score):
     return fig1, fig2, fig3, fig4, fig5, fig6
 
 
-# @app.callback(
-#     Output('interactive', 'figure'),
-#     Input('select-column', 'value'),
-#     Input('select-embedding', 'value'),
-# )
-# def interactive_plot(col, map):
-#     if map == 'umap':
-#         frame = umap2.copy()
-#     elif map == 'tsne':
-#         frame = tsne2.copy()
-#
-#     #frame['zxcvbn'] = frame['zxcvbn'].astype('string')
-#     int_fig = px.scatter(data_frame=frame , x='x', y='y', color=col,
-#                          #color_discrete_sequence=px.colors.qualitative.Prism,
-#                          hover_data=['password'])
-#     return int_fig
+@app.callback(
+    Output('embedding-2d', 'figure'),
+    Output('embedding-3d', 'figure'),
+    Input('select-column', 'value'),
+    Input('select-embedding', 'value'),
+)
+def embedding_plots(col, map):
+    frame = rd.copy()
+
+    if map == 'umap':
+        fig2d = px.scatter(data_frame=frame , x='x_2u', y='y_2u', color=col,
+                         color_discrete_sequence=px.colors.qualitative.T10,
+                         hover_data=['password'],
+                           title='Embedding 2D')
+        fig3d = px.scatter_3d(data_frame=frame, x='x_3u', y='y_3u', z='z_3u', color=col,
+                           color_discrete_sequence=px.colors.qualitative.T10,
+                           hover_data=['password'],
+                              title='Embedding 3D')
+    elif map == 'tsne':
+        fig2d = px.scatter(data_frame=frame, x='x_2t', y='y_2t', color=col,
+                           color_discrete_sequence=px.colors.qualitative.T10,
+                           hover_data=['password'],
+                           title='Embedding 2D')
+        fig3d = px.scatter_3d(data_frame=frame, x='x_3t', y='y_3t', z='z_3t', color=col,
+                              color_discrete_sequence=px.colors.qualitative.T10,
+                              hover_data=['password'],
+                              title='Embedding 3D')
+    fig2d.update_layout(xaxis_title='x',yaxis_title='y')
+    fig3d.update_layout(scene = dict(xaxis_title='x', yaxis_title='y', zaxis_title='z'))
+
+    return fig2d, fig3d
 
 # @app.callback(
 #     Output('interactive-2', 'figure'),
