@@ -29,7 +29,7 @@ app = dash.Dash(__name__)
 
 app.layout = html.Div(
     [
-        html.H1('Visual insights into Passwords', style={'text-align': 'left', 'font-family': 'sans-serif'}),
+        html.H1('AI insights into Passwords', style={'text-align': 'left', 'font-family': 'sans-serif'}),
         html.P('This page is best viewed in full size window', style={'text-align': 'left', 'font-family': 'sans-serif',
                                                                       'font-size': '15px', 'font-style': 'italic'}),
         html.Div(
@@ -282,22 +282,6 @@ def embedding_plots(col, map):
     fig3d.update_layout(scene = dict(xaxis_title='x', yaxis_title='y', zaxis_title='z'))
 
     return fig2d, fig3d
-
-# @app.callback(
-#     Output('interactive-2', 'figure'),
-#     Input('select-num-clusters', 'value'),
-# )
-# def interactive_2_plot(clus):
-#
-#     frame = pd.read_csv('../data/data2use/Embedding/red_100_'+ str(clus) +'_umap_2.csv')
-#
-#     frame['label'] = frame['label'].astype('str')
-#
-#     #frame['zxcvbn'] = frame['zxcvbn'].astype('string')
-#     int2_fig = px.scatter(data_frame=frame , x='x', y='y', color='label',
-#                          #color_discrete_sequence=px.colors.qualitative.Alphabet,
-#                          hover_data=['password'])
-#     return int2_fig
 
 
 if __name__ == "__main__":
