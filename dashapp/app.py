@@ -20,7 +20,7 @@ reduction_file = '../data/data2use/USA2/reduction/freq_100_10_clus.csv'
 
 df = pd.read_csv(frame_path)
 df = df.iloc[:100000, :]
-dff = pd.DataFrame(df[['password','frequency']].iloc[:200,:])
+dff = pd.DataFrame(df[['password','frequency']].iloc[:1000,:])
 rd = pd.read_csv(reduction_file)
 # rd['zxcvbn'] = rd['zxcvbn'].astype('string')
 
@@ -55,12 +55,12 @@ app.layout = html.Div(
                            ]),
                        ],  # className='boxdiv',
                            style={#'width': '80vh', 'height': '40vh',
-                                  'vertical-align': 'top', 'font-family': 'sans-serif','width': ' 70vh'}
+                                  'vertical-align': 'top', 'font-family': 'sans-serif','width': ' 60vh'}
                        ),
                    ], style={'vertical-align': 'top', 'display': 'inline-block', 'width': '132.5vh', 'height': '40vh',}
                ),
                html.Div([
-                   html.Label("Top 200 most frequent passwords"),
+                   html.Label("Top 1000 most frequent passwords"),
                    dash_table.DataTable(
                    id='top-100-passwords',
                    columns=[{'id': c, 'name': c} for c in dff.columns],
@@ -69,7 +69,7 @@ app.layout = html.Div(
                    style_as_list_view=True,
                    style_header={'backgroundColor': '#ADD8E6', 'fontWeight': 'bold'},
                )], className='boxdiv',
-                   style={'display': 'inline-block', 'width': ' 60vh', 'height': '40vh',
+                   style={'display': 'inline-block', 'width': ' 50vh', 'height': '40vh',
                           'font-family': 'sans-serif', 'horizontal-align': 'right'}
                )
            ], #className='boxdiv'
@@ -133,7 +133,7 @@ app.layout = html.Div(
                 dcc.Dropdown(id='select-column',
                         options=[
                              {'label': 'Password topic', 'value': 'topic'},
-                             {'label': 'Policy compliance', 'value': 'passpolicy'},
+                             #{'label': 'Policy compliance', 'value': 'passpolicy'},
                              {'label': 'zxcvbn score', 'value': 'zxcvbn'},
                              {'label': 'Password category', 'value': 'category'},
                              {'label': 'First character', 'value': 'first_char'},
