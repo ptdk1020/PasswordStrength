@@ -15,12 +15,12 @@ from dash.dependencies import Input, Output
 # ---------end-of-gensim-stuff---------------
 
 # -------- import clean data ----------------
-frame_path = '../data/data2use/USA2/data0.csv'
-reduction_file = '../data/data2use/USA2/reduction/freq_100_10_clus.csv'
+frame_path = '../demo/demo_frame.csv'
+reduction_file = '../demo/demo_reduction.csv'
 
 df = pd.read_csv(frame_path)
-df = df.iloc[:100000, :]
-dff = pd.DataFrame(df[['password','frequency']].iloc[:1000,:])
+# df = df.iloc[:100000, :]
+dff = pd.DataFrame(df[['password','frequency']].iloc[:1000, :])
 rd = pd.read_csv(reduction_file)
 # rd['zxcvbn'] = rd['zxcvbn'].astype('string')
 
