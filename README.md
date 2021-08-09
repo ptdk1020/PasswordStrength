@@ -25,4 +25,4 @@ To create a visualization dashboard, we use [the Dash framework](https://dash.pl
 ![Screenshot of Dash app](images/DashDemo.png)
 
 ### Notebooks
-I record some of my approaches and analysis in `Notebooks`. Note that these are quite unrefined still. There are some good information there, but can be a little hard to read.  
+I recorded some of my approaches and analysis in `Notebooks`. Note that these are quite unrefined still. There are some good information there, but can be a little hard to read.  
