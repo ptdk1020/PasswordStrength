@@ -10,10 +10,6 @@ import dash_html_components as html
 import dash_table
 from dash.dependencies import Input, Output
 
-# ---------gensim-stuff---------------------
-
-# ---------end-of-gensim-stuff---------------
-
 # -------- import clean data ----------------
 frame_file = '../demo/demo_frame.csv'
 reduction_file = '../demo/demo_reduction.csv'
